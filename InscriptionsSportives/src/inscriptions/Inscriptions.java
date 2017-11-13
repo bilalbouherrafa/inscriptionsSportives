@@ -1,5 +1,5 @@
 package inscriptions;
-
+import java.util.Date;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -241,6 +241,10 @@ public class Inscriptions implements Serializable
 	
 	public static void main(String[] args)
 	{
+		LocalDate a = LocalDate.now();
+		System.out.println(a);
+		Inscriptions i = new Inscriptions();
+		//Competition c = new Competition(i,"test",2017-11-25,true);
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", null, false);
 		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
