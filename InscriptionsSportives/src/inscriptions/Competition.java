@@ -56,18 +56,18 @@ public class Competition implements Comparable<Competition>, Serializable
 	 * @return
 	 */
 	
+
 	public boolean inscriptionsOuvertes()
-	{
-
-		LocalDate a = LocalDate.now();
-
-		// TODO retourner vrai si et seulement si la date systÃ¨me est antÃ©rieure Ã  la date de clÃ´ture.
-		if(a.isAfter(getDateCloture()))
-			return false;
-		else 
-			return true;
-		
-	}
+    {
+        LocalDate datesys = LocalDate.now();
+        // TODO retourner vrai si et seulement si la date systéme est antérieure à la date de clôture.
+        if(datesys.compareTo(dateCloture) > 1) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 	
 	/**
 	 * Retourne la date de cloture des inscriptions.
@@ -103,6 +103,7 @@ public class Competition implements Comparable<Competition>, Serializable
 		else
 			this.dateCloture = dateCloture;
 	}
+	
 	
 	/**
 	 * Retourne l'ensemble des candidats inscrits.
