@@ -1,13 +1,20 @@
-package inscriptions;
+package JUnit;
 
 import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
-public class TestPers {
+import inscriptions.Competition;
+import inscriptions.Equipe;
+import inscriptions.Inscriptions;
+import inscriptions.Personne;
+
+public class TestPersonne {
 
     final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     final String input = "01-07-2018";
@@ -51,7 +58,6 @@ public class TestPers {
 
         assertEquals(prenom, "Dent de plomb");
 
-        System.out.println("Get : " + prenom + " , Dent de plomb");
     }
     
     @Test
@@ -62,7 +68,7 @@ public class TestPers {
 
         assertEquals(tony.getPrenom(), prenom);
 
-        System.out.println("Set : " + prenom + " , " + tony.getPrenom());
+
 
 
     }
@@ -73,39 +79,60 @@ public class TestPers {
 
         assertEquals(mail, "azerty");
 
-        System.out.println("GetMail : " + mail + " , " + tony.getMail());
+
     }
 
     @Test
     public void testSetMail() {
         String mail = "1234";
 
-        Personne tony = inscriptions.createPersonne("tony", "Dent de cuivre", mail);
+        Personne bilz = inscriptions.createPersonne("Bilzer", "Le thuggy", mail);
 
-        assertEquals(tony.getMail(), mail);
+        assertEquals("SetMail : " + mail + " , " + bilz.getMail(), bilz.getMail(), mail);
 
-        System.out.println("SetMail : " + mail + " , " + tony.getMail());
     }
 
     @Test
     public void testGetEquipes() {
-    	Equipe a = inscriptions.createEquipe("test");
-    	Personne crunchy = inscriptions.createPersonne("tony", "Dent de cuivre", "12");
-    	a.add(crunchy);
-    	//assertEquals(crunchy.getEquipes(), "[" + a + "]");
-    	System.out.println("[" + a + "]");
-    	System.out.println(crunchy.getEquipes());
     	
+    	Equipe a = new Equipe(inscriptions, "test");
+    	Personne crunchy = inscriptions.createPersonne("Gerz", "Le loup", "12");
+    	a.add(crunchy);
+    	Set<Equipe> equ = new TreeSet<Equipe>();
+    	equ.add(a);
+    	assertEquals(crunchy.getEquipes(), equ);
+    	
+
+    	
+    }
+    
+    @Test
+    public void testRemoveEquipe() {
+    	Inscriptions inscr = Inscriptions.getInscriptions();
+    	Equipe a = inscr.createEquipe("a");
+    	Equipe b = inscr.createEquipe("b");
+    	
+    	Set<Equipe> trees = new TreeSet<Equipe>();
+    	trees.add(a);
+    	inscriptions.remove(b);
+    	assertEquals(trees, inscr.getEquipes());
     }
 
     @Test
     public void testAddEquipe() {
-        fail("Not yet implemented");
+    	Equipe a = inscriptions.createEquipe("a");
+    	Equipe b = inscriptions.createEquipe("b");
+    	
+        
+    	Set<Equipe> tree = new TreeSet<Equipe>();
+    	tree.add(a);
+    	tree.add(b);
+
+    	
+       assertEquals(tree, inscriptions.getEquipes());
+       System.out.println(tree +" ! !" + inscriptions.getEquipes());
     }
 
-    @Test
-    public void testRemoveEquipe() {
-        fail("Not yet implemented");
-    }
+
 
 }

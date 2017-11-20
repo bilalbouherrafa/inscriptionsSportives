@@ -15,11 +15,11 @@ public class Equipe extends Candidat
 	private static final long serialVersionUID = 4147819927233466035L;
 	private SortedSet<Personne> membres = new TreeSet<>();
 	
-	Equipe(Inscriptions inscriptions, String nom)
+	public Equipe(Inscriptions inscriptions, String nom)
 	{
 		super(inscriptions, nom);
 	}
-
+ 
 	/**
 	 * Retourne l'ensemble des personnes formant l'équipe.
 	 */
