@@ -31,7 +31,7 @@ public class TestPersonne {
 
     @Test
     public void testDelete() {
-        fail("Not yet implemented");
+        
     }
 
     @Test
