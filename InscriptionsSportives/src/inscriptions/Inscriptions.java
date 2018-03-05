@@ -1,4 +1,5 @@
 package inscriptions;
+ 
 import java.util.Date;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,6 +12,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import commandLineMenus.*;
+
 
 /**
  * Point d'entrÃ©e dans l'application, un seul objet de type Inscription
@@ -134,7 +138,7 @@ public class Inscriptions implements Serializable
 		competitions.remove(competition);
 	}
 	
-	public void remove(Candidat candidat)
+	void remove(Candidat candidat)
 	{
 		candidats.remove(candidat);
 	}
@@ -242,7 +246,7 @@ public class Inscriptions implements Serializable
 	
 	public static void main(String[] args)
 	{
-		final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		/*final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         final String input = "01-07-2018";
         final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
 
@@ -258,7 +262,55 @@ public class Inscriptions implements Serializable
 		lesManouches.add(tony);
 		System.out.println(inscriptions);
 		lesManouches.delete();
-		System.out.println(inscriptions);
+		System.out.println(inscriptions);*/
+		
+		Menu macfirstsapu = new Menu("crenemagl");
+		Menu addCompet = new Menu("Ajouter une compétition","1");
+		macfirstsapu.add(addCompet);
+		Menu addPersonne = new Menu("Ajouter une personne","2");
+		macfirstsapu.add(addPersonne);
+		Menu addEquipe = new Menu("Ajouter une équipe","3");
+		macfirstsapu.add(addEquipe);
+		
+		addCompet.add(
+			new Option("Ajouter une compétition", "1", new Action()
+			{
+
+				@Override
+				public void optionSelected() {
+					// TODO Auto-generated method stub
+					System.out.println("Equipe");
+				}
+				
+			}));
+		
+		
+		addPersonne.add(
+			new Option("Ajouter une personne", "2", new Action()
+			{
+
+				@Override
+				public void optionSelected() {
+					// TODO Auto-generated method stub
+					System.out.println("Equipe");
+				}
+				
+			}));
+		
+			
+		addEquipe.add(
+			new Option("Ajouter une équipe", "3", new Action()
+			{
+
+				@Override
+				public void optionSelected() {
+					// TODO Auto-generated method stub
+					System.out.println("Equipe");
+				}
+				
+			}));
+		macfirstsapu.start();
+		
 		try
 		{
 			inscriptions.sauvegarder();

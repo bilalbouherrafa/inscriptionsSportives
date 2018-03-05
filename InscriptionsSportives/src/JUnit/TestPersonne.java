@@ -108,29 +108,18 @@ public class TestPersonne {
     
     @Test
     public void testRemoveEquipe() {
-    	Inscriptions inscr = Inscriptions.getInscriptions();
-    	Equipe a = inscr.createEquipe("a");
-    	Equipe b = inscr.createEquipe("b");
+    	Equipe a = inscriptions.createEquipe("a");
+    	Equipe b = inscriptions.createEquipe("b");
     	
-    	Set<Equipe> trees = new TreeSet<Equipe>();
-    	trees.add(a);
-    	inscriptions.remove(b);
-    	assertEquals(trees, inscr.getEquipes());
+    	b.delete();
+    	assertTrue(!inscriptions.getEquipes().contains(b));
     }
 
     @Test
     public void testAddEquipe() {
-    	Equipe a = inscriptions.createEquipe("a");
-    	Equipe b = inscriptions.createEquipe("b");
-    	
-        
-    	Set<Equipe> tree = new TreeSet<Equipe>();
-    	tree.add(a);
-    	tree.add(b);
-
-    	
-       assertEquals(tree, inscriptions.getEquipes());
-       System.out.println(tree +" ! !" + inscriptions.getEquipes());
+		Equipe a ;
+		foot.add(a);
+		assertTrue(inscriptions.getEquipes().contains(a));
     }
 
 
