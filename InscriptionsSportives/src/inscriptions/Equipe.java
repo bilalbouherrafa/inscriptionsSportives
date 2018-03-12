@@ -29,6 +29,7 @@ public class Equipe extends Candidat
 		return Collections.unmodifiableSortedSet(membres);
 	}
 	
+	
 	/**
 	 * Ajoute une personne dans l'équipe.
 	 * @param membre

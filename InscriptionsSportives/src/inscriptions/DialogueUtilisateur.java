@@ -1,21 +1,25 @@
 package inscriptions;
 
-import java.awt.List;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.SortedSet;
 
 import commandLineMenus.Option;
 import commandLineMenus.rendering.examples.util.InOut;
 import commandLineMenus.Action;
+import commandLineMenus.List;
+import commandLineMenus.ListAction;
+import commandLineMenus.ListData;
 import commandLineMenus.Menu;
 
 
 public class DialogueUtilisateur {
 
-	private static Inscriptions inscriptions;
+	private Inscriptions inscriptions;
 	private Personne pers;
 	private Competition compet;
 	private Equipe team;
@@ -23,7 +27,7 @@ public class DialogueUtilisateur {
 	
 
 	public DialogueUtilisateur(Inscriptions inscriptions) {
-		DialogueUtilisateur.inscriptions = inscriptions;
+		this.inscriptions = inscriptions;
 	}
 	
 	public void autoSave() {
@@ -48,6 +52,7 @@ public class DialogueUtilisateur {
 	return menu;
 	
 	}
+
 	
 	public void start() {
 		
@@ -196,17 +201,17 @@ public class DialogueUtilisateur {
 		Menu menuEquipe = new Menu("Equipe", "1");
 		menuEquipe.add(createTeamOption());
 		menuEquipe.add(listTeamOption());
-		menuEquipe.add(listMemberTeamOption());
-		menuEquipe.add(removeTeamOption());
-		menuEquipe.add(editNameTeamOption());
-		menuEquipe.add(removeGuyOfTeamOption());
+		menuEquipe.add(sousMenuEquipe());
 		menuEquipe.addBack("b");
 		return menuEquipe;
 	}
+
+	
 	
 	public Option createTeamOption() {
 		return new Option("Créer une équipe", "1", createTeamAction());
 	}
+	
 	
 	private Action createTeamAction() {
 		return new Action() {
@@ -230,9 +235,39 @@ public class DialogueUtilisateur {
 			}
 		};
 	}
+
 	
 	public Option listMemberTeamOption() {
-		return new Option("Lister les membres d'une équipe", "3", listMemberTeamAction());
+		return new Option("Afficher les joueurs de l'équipe", "a", listMemberTeamAction());
+	}
+	
+	
+	private Menu sousMenuEquipe() {
+		List<String> sousMenuEquipe = new List<String>("Selectionne une équipe","3",
+			new ListData <String>()
+			{
+				public java.util.List<String> getList()
+				{
+					return new ArrayList<String>(inscriptions.getEquipes().itemRenderer());
+				}
+			},
+			new ListAction <String>()
+			{	
+				
+				public void itemSelected(int index, String nom)
+				{
+					System.out.println("Sélectionné : " + nom + ", à l'index " + index);
+				}
+
+
+			});
+		
+		//sousMenuEquipe.add(listMemberTeamOption());
+		//sousMenuEquipe.add(removeTeamOption());
+		sousMenuEquipe.addBack("b");
+		//String nameTeam = InOut.getString("Nom de l'équipe : ");
+		//sousMenuEquipe.start();
+		return sousMenuEquipe;
 	}
 	
 	private Action listMemberTeamAction() {
@@ -241,7 +276,6 @@ public class DialogueUtilisateur {
 				String nameTeam = InOut.getString("Nom de l'équipe : ");
 				SortedSet<Equipe> listTeam = inscriptions.getEquipes();
 				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
-				
 				for(Candidat c : listTeams) {
 					if(c.getNom().equals(nameTeam)) {
 						for(Equipe t : listTeam) {
@@ -256,7 +290,7 @@ public class DialogueUtilisateur {
 	}
 	
 	public Option removeTeamOption() {
-		return new Option("Supprimer une équipe", "4", removeTeamAction());
+		return new Option("Supprimer l'équipe", "s", removeTeamAction());
 	}
 	
 	private Action removeTeamAction() {
