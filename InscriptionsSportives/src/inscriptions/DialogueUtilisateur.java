@@ -150,6 +150,7 @@ public class DialogueUtilisateur {
 				
 				}while(!nameTeam.equals("stop"));
 				
+				
 			}
 		};
 	}

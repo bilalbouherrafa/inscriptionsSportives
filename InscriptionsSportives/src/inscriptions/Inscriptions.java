@@ -265,5 +265,6 @@ public class Inscriptions implements Serializable
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		DialogueUtilisateur dialogue = new DialogueUtilisateur(inscriptions);
 		dialogue.start();
+		
 	}
 }
