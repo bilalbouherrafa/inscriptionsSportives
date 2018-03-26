@@ -14,6 +14,7 @@ import commandLineMenus.Action;
 import commandLineMenus.List;
 import commandLineMenus.ListAction;
 import commandLineMenus.ListData;
+import commandLineMenus.ListOption;
 import commandLineMenus.Menu;
 
 
@@ -202,12 +203,11 @@ public class DialogueUtilisateur {
 		Menu menuEquipe = new Menu("Equipe", "1");
 		menuEquipe.add(createTeamOption());
 		menuEquipe.add(listTeamOption());
-		menuEquipe.add(sousMenuEquipe());
+		menuEquipe.add(selectTeam());
 		menuEquipe.addBack("b");
 		return menuEquipe;
 	}
 
-	
 	
 	public Option createTeamOption() {
 		return new Option("Créer une équipe", "1", createTeamAction());
@@ -238,56 +238,71 @@ public class DialogueUtilisateur {
 	}
 
 	
-	public Option listMemberTeamOption() {
-		return new Option("Afficher les joueurs de l'équipe", "a", listMemberTeamAction());
+
+	
+//	private Menu sousMenuEquipe() {
+//		List<Equipe> sousMenuEquipe = new List<Equipe>("Selectionne une équipe","3",
+//			new ListData <Equipe>()
+//			{
+//				public java.util.List<Equipe> getList()
+//				{
+//					return new ArrayList<Equipe>(inscriptions.getEquipes());
+//				}
+//			},
+//			new ListOption <Equipe>()
+//			{
+//
+//				@Override
+//				public Option getOption(Equipe item) {
+//					// TODO Auto-generated method stub
+//					return null;
+//				}	
+//				
+//			});
+	
+	private List<Equipe> selectTeam() {
+		return new List<Equipe>("Selectionner une équipe", "e",
+				() -> new ArrayList<>(inscriptions.getEquipes()),
+				(element) -> menuSelectTeam(element)
+		);
 	}
 	
-	
-	private Menu sousMenuEquipe() {
-		List<Equipe> sousMenuEquipe = new List<Equipe>("Selectionne une équipe","3",
-			new ListData <Equipe>()
-			{
-				public java.util.List<Equipe> getList()
-				{
-					return new ArrayList<Equipe>(inscriptions.getEquipes());
-				}
-			},
-			new ListAction <Equipe>()
-			{	
-				
-				public void itemSelected(int index, Equipe nom)
-				{
-					System.out.println("Sélectionné : " + nom + ", à l'index " + index);
-				}
-
-
-			});
+	private Menu menuSelectTeam(Equipe e) {
+		Menu selectTeam = new Menu(e.getNom());
+		selectTeam.add(listMemberTeamOption(e));
+		selectTeam.add(ajoutPersonneEquipe(e));
+		selectTeam.addBack("b");
+		return selectTeam;
+	}
+						
 		
-		//sousMenuEquipe.add(listMemberTeamOption());
-		//sousMenuEquipe.add(removeTeamOption());
-		sousMenuEquipe.addBack("b");
-		//String nameTeam = InOut.getString("Nom de l'équipe : ");
-		//sousMenuEquipe.start();
-		return sousMenuEquipe;
+		
+//		
+//		//sousMenuEquipe.add(listMemberTeamOption());
+//		//sousMenuEquipe.add(removeTeamOption());
+//		sousMenuEquipe.addBack("b");
+//		//String nameTeam = InOut.getString("Nom de l'équipe : ");
+//		//sousMenuEquipe.start();
+//		return sousMenuEquipe;
+//	}
+//	
+	public Option listMemberTeamOption(Equipe e) {
+		return new Option("Afficher les joueurs de l'équipe", "a",
+				() -> {System.out.println(e.getMembres());}
+		);
 	}
 	
-	private Action listMemberTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				String nameTeam = InOut.getString("Nom de l'équipe : ");
-				SortedSet<Equipe> listTeam = inscriptions.getEquipes();
-				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
-				for(Candidat c : listTeams) {
-					if(c.getNom().equals(nameTeam)) {
-						for(Equipe t : listTeam) {
-							if(t.toString().equals(c.toString())) {
-								System.out.println(t.getMembres());
-							}
-						}
-					}
-				}
-			}
-		};
+	private List<Personne> ajoutPersonneEquipe(Equipe e) {
+		return new List<Personne>("Selectionner une personne", "p",
+				() -> new ArrayList<>(inscriptions.getPersonnes()),
+				(element) -> addGuyInTeam(e, element)
+		);
+	}
+	
+	public Option addGuyInTeam(Equipe e, Personne p) {
+		return new Option("Ajouter " + p.getNom() + " " + p.getPrenom() + " à " + e.getNom(), "a",
+				() -> {e.add(p);}
+				);
 	}
 	
 	public Option removeTeamOption() {
@@ -393,10 +408,11 @@ public class DialogueUtilisateur {
 		menuPersonne.add(listGuysOption());
 		menuPersonne.add(removeGuyOption());
 		menuPersonne.add(menuEditGuy());
-		menuPersonne.add(addAGuyInTeamOption());
+//		menuPersonne.add(addAGuyInTeamOption());
 		menuPersonne.addBack("b");
 		return menuPersonne;
 	}
+	
 	
 	public Option addAGuyOption() {
 		
@@ -582,45 +598,46 @@ public class DialogueUtilisateur {
 		};
 	}
 	
-	public Option addAGuyInTeamOption() {
-		return new Option("Ajouter un sportif dans une équipe", "5", addAGuyInTeamAction());
-	}
-	
-	private Action addAGuyInTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
-				System.out.println(inscriptions.getEquipes());
-				String selectTeam = InOut.getString("Selectionner l'équipe : ");
-				String nomPersonne = null;
-				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
-				System.out.println(inscriptions.getPersonnes());
-				
-				do {
-					nomPersonne = InOut.getString("Nom du sportif : ");
-					for(Candidat c : listTeams) {
-						if(c.getNom().equals(selectTeam)) {
-							for(Equipe t : listTeam) {
-								if(t.toString().equals(c.toString())) {
-									
-									for(Personne p : listGuys) {
-										if(p.getNom().equals(nomPersonne)) {
-											t.add(p);
-											autoSave();
-											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
-										}
-									}
-								}
-								else {
-									System.out.println("Il y a eu une erreur lors de l'ajout du sportif dans l'équipe :" + c.getNom());
-								}
-							}
-							
-						}
-					}	
-				}while(!nomPersonne.equals("stop"));
-			}
-		};
-	}
+//	public Option addAGuyInTeamOption() {
+//		return new Option("Ajouter un sportif dans une équipe", "5", addAGuyInTeamAction());
+//	}
+//	
+//	private Action addAGuyInTeamAction(Equipe e) {
+//		return new Action() {
+//			public void optionSelected() {
+//				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
+//				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
+//				//System.out.println(inscriptions.getEquipes());
+//				//String selectTeam = InOut.getString("Selectionner l'équipe : ");
+//				selectTeam = e.getNom();
+//				String nomPersonne = null;
+//				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
+//				System.out.println(inscriptions.getPersonnes());
+//				
+//				do {
+//					nomPersonne = InOut.getString("Nom du sportif : ");
+//					for(Candidat c : listTeams) {
+//						if(c.getNom().equals(selectTeam)) {
+//							for(Equipe t : listTeam) {
+//								if(t.toString().equals(c.toString())) {
+//									
+//									for(Personne p : listGuys) {
+//										if(p.getNom().equals(nomPersonne)) {
+//											t.add(p);
+//											autoSave();
+//											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
+//										}
+//									}
+//								}
+//								else {
+//									System.out.println("Il y a eu une erreur lors de l'ajout du sportif dans l'équipe :" + c.getNom());
+//								}
+//							}
+//							
+//						}
+//					}	
+//				}while(!nomPersonne.equals("stop"));
+//			}
+//		};
+//	}
 }
