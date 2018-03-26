@@ -440,6 +440,7 @@ public class DialogueUtilisateur {
 		return new Option("Lister les sportifs", "2", listGuysAction());
 	}
 
+	//Listes les personnes
 	private Action listGuysAction() {
 		
 		return new Action() {
