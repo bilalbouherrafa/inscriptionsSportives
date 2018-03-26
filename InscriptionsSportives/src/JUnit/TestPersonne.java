@@ -117,7 +117,7 @@ public class TestPersonne {
 
     @Test
     public void testAddEquipe() {
-		Equipe a ;
+		Equipe a = inscriptions.createEquipe("a") ;
 		foot.add(a);
 		assertTrue(inscriptions.getEquipes().contains(a));
     }

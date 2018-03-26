@@ -17,6 +17,7 @@ import commandLineMenus.ListData;
 import commandLineMenus.Menu;
 
 
+
 public class DialogueUtilisateur {
 
 	private Inscriptions inscriptions;
@@ -243,18 +244,18 @@ public class DialogueUtilisateur {
 	
 	
 	private Menu sousMenuEquipe() {
-		List<String> sousMenuEquipe = new List<String>("Selectionne une équipe","3",
-			new ListData <String>()
+		List<Equipe> sousMenuEquipe = new List<Equipe>("Selectionne une équipe","3",
+			new ListData <Equipe>()
 			{
-				public java.util.List<String> getList()
+				public java.util.List<Equipe> getList()
 				{
-					return new ArrayList<String>(inscriptions.getEquipes().itemRenderer());
+					return new ArrayList<Equipe>(inscriptions.getEquipes());
 				}
 			},
-			new ListAction <String>()
+			new ListAction <Equipe>()
 			{	
 				
-				public void itemSelected(int index, String nom)
+				public void itemSelected(int index, Equipe nom)
 				{
 					System.out.println("Sélectionné : " + nom + ", à l'index " + index);
 				}
