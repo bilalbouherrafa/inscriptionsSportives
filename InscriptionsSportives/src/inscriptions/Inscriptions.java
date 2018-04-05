@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import Persistance.Passerelle;
 import commandLineMenus.*;
 import commandLineMenus.rendering.examples.util.InOut;
 
@@ -245,26 +246,11 @@ public class Inscriptions implements Serializable
 	
 	public static void main(String[] args)
 	{
-//		final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//		final String input = "01-07-2018";
-//		final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
-//
-//		Inscriptions inscriptions = Inscriptions.getInscriptions();
-//		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", null, false);
-//		
-//		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
-//				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
-//		flechettes.add(tony);
-//		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
-//		lesManouches.add(boris);
-//		lesManouches.add(tony);
-//		System.out.println(inscriptions);
-//		lesManouches.delete();
-//		System.out.println(insAcriptions);
-		
+		Passerelle p = new Passerelle();
+		p.open();
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		DialogueUtilisateur dialogue = new DialogueUtilisateur(inscriptions);
 		dialogue.start();
-		
+		p.close();
 	}
 }

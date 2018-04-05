@@ -4,15 +4,41 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.SortNatural;
+
+import javax.persistence.ManyToOne;
+
 /**
  * Représente une Equipe. C'est-à-dire un ensemble de personnes pouvant 
  * s'inscrire à une compétition.
  * 
  */
 
+@Entity
 public class Equipe extends Candidat
-{
+{	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+	
 	private static final long serialVersionUID = 4147819927233466035L;
+	
+	@ManyToOne
+	@Cascade(value = { CascadeType.SAVE_UPDATE})
+	private Personne personne;
+	
+	@OneToMany(mappedBy = "equipe")
+	@Cascade(value = { CascadeType.ALL })
+	@SortNatural
 	private SortedSet<Personne> membres = new TreeSet<>();
 	
 	public Equipe(Inscriptions inscriptions, String nom)

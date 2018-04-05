@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.SortedSet;
 
+import Persistance.Passerelle;
+
+import java.time.format.DateTimeParseException;
+
+
+
 import commandLineMenus.Option;
 import commandLineMenus.rendering.examples.util.InOut;
 import commandLineMenus.Action;
@@ -61,143 +67,207 @@ public class DialogueUtilisateur {
 		MenuPrincipal().start();
 	}
 	
-	private Menu menuCompetition() {
-		Menu menuCompetition = new Menu("Compétition", "3");
-		
-		menuCompetition.add(creerCompet());
-		menuCompetition.add(listCompetOption());
-		menuCompetition.add(addTeamInCompetOption());
-		menuCompetition.add(addGuyInCompetOption());
+//	private Menu menuCompetition() {
+//		Menu menuCompetition = new Menu("Compétition", "3");
+//		
+//		menuCompetition.add(creerCompet());
+//		menuCompetition.add(listCompetOption());
+//		menuCompetition.add(addTeamInCompetOption());
+//		menuCompetition.add(addGuyInCompetOption());
 //		menuCompetition.add(editNameCompetOption());
-//		menuCompetition.add(removeCompetOption());
+//	    menuCompetition.add(removeCompetOption());
+//		menuCompetition.addBack("b");
+//		return menuCompetition;
+//	}
+	
+	private Menu menuCompetition() {
+		Menu menuCompetition = new Menu("Menu Compétition", "c");
+		
+		menuCompetition.add(createCompetOption());
+		menuCompetition.add(listCompetOption());
+		menuCompetition.add(selectCompet());
+		menuCompetition.add(autoSaveOption());
 		menuCompetition.addBack("b");
 		return menuCompetition;
 	}
-	
-	public Option creerCompet() {
-		return new Option("Créer une compétition", "1", createCompetAction());
+	public Option createCompetOption() {
+		return new Option("Créer une compétition", "c", createCompetAction());
 	}
 	
 	private Action createCompetAction() {
 		return new Action() {
 			public void optionSelected() {
+				
+				LocalDate localDate = null;
+				
 				String nomCompet = InOut.getString("Entrer le nom de la compétition : ");
-				String dateCloture = InOut.getString("Entrer la date de clôture : ");
-				final LocalDate localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+				
+				do {
+					try {
+						String dateCloture = InOut.getString("Entrer la date de clôture (dd-mm-yyyy) : ");
+						localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+					} catch(DateTimeParseException e) {
+						System.out.println("Veuillez respecter le format de la date 'dd-mm-yyyy' ! " + e);
+					}
+				}while(localDate == null);
+				
 				String teamOrNotTeam = null;
 				boolean enEquipe = false;
 				
-				/* 
 				do {
-					teamOrNotTeam = InOut.getString("Entrer 'equipe' pour une compétition en équipe ? (equipe) ");
-				}while(!teamOrNotTeam.equals("equipe"));	
+					teamOrNotTeam = InOut.getString("Entrer 'equipe' pour une compétition en équipe ou solo pour compétition individuel ? (equipe/solo) ");
+				}while((teamOrNotTeam.equals("equipe")) && (teamOrNotTeam.equals("solo")));	
 				
-				if(teamOrNotTeam.equals("equipe")) {
-					enEquipe = true;
-				}
-				else {
-					enEquipe = false;
-				}
-				*/
-				Competition compet = inscriptions.createCompetition(nomCompet, localDate, enEquipe);
-				autoSave();
+				enEquipe = teamOrNotTeam.equals("equipe");
+				
+				inscriptions.createCompetition(nomCompet, localDate, enEquipe);
 				System.out.println("La compétition, " + nomCompet + " a était créée avec succés");
 			}
 		};
 	}
 	
 	public Option listCompetOption() {
-		return new Option("Lister les compétitions", "2", listCompetAction());
+		return new Option("Lister les compétitions", "a",
+				() -> {System.out.println(inscriptions.getCompetitions());}
+		);
 	}
 	
-	private Action listCompetAction() {
-		return new Action() {
-			public void optionSelected() {
-				System.out.println(inscriptions.getCompetitions());
+	private List<Competition> selectCompet() {
+		return new List<Competition>("Sélectionner une compétition", "e",
+				() -> new ArrayList<>(inscriptions.getCompetitions()),
+				(element) -> menuSelectCompet(element)
+				);
+	}
+	
+	public Menu menuSelectCompet(Competition competition) {
+		Menu selectCompet = new Menu("Compétition : " + competition.getNom());
+		selectCompet.add(menuAdd(competition));
+		selectCompet.add(editNameCompetOption(competition));
+		selectCompet.add(menuRemove(competition));
+		selectCompet.add(detailCompet(competition));
+		selectCompet.add(editDateEnd(competition));
+		selectCompet.addBack("b");
+		return selectCompet;
+	}
+	
+	private Menu menuAdd(Competition competition) {
+		Menu menuAdd = new Menu("Menu Inscription", "i");
+		if(competition.estEnEquipe()) {
+			menuAdd.add(addTeamInCompetOption(competition));
+		}
+		else {
+			menuAdd.add(addGuyInCompetOption(competition));
+		}
+		menuAdd.addBack("b");
+		return menuAdd;
+	}
+	
+	public Option addTeamInCompetOption(Competition competition) {
+		ArrayList clone = new ArrayList<>(inscriptions.getEquipes());
+		for (Candidat c : competition.getCandidats()){
+			if (clone.contains(c)){
+				clone.remove(c);
 			}
-		};
+		}
+		return new List <Equipe>("Sélection de l'équipe", "e",
+				() -> clone,
+				(element) -> addTeamInCompet(competition, element)
+			);
 	}
 	
-	public Option addTeamInCompetOption() {
-		return new Option("Ajouter une équipe dans une compétition", "3", addTeamInCompetAction());
+	public Option addTeamInCompet(Competition competition, Equipe equipe) {
+		return new Option ("Inscrire " + equipe.getNom() + " dans la compétition : " + competition.getNom(), "a",
+				() -> {competition.add(equipe); System.out.println(equipe.getNom() + " a était inscrit dans la compétition : " + competition.getNom());}
+				);
 	}
 	
-	private Action addTeamInCompetAction() {
-		return new Action () {
-			public void optionSelected() {
-				
-				String nameCompet = InOut.getString("Entrer le nom de la compétition : ");
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Competition> listCompet = inscriptions.getCompetitions();
-				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
-				String nameTeam = null;
-				
-				do {
-				
-					for(Competition co : listCompet) {
-						if(co.getNom().equals(nameCompet)) {
-							
-							nameTeam = InOut.getString("Entrer le nom d'une équipe : ");
-							for(Candidat c : listTeams) {
-								if(c.getNom().equals(nameTeam)) {
-									for(Equipe t : listTeam) {
-										if(t.toString().equals(c.toString())) {
-											co.add(t);
-											autoSave();
-											System.out.println(nameTeam + "est inscrite dans la compétition " + nameCompet);
-										}
-									}
-								}
-							}
-						}
-		
-							
-						
+	public Option addGuyInCompetOption(Competition competition) {
+		return new List <Personne>("Sélection du sportif", "s",
+				() -> new ArrayList<>(inscriptions.getPersonnes()),
+				(element) -> addGuyInCompet(competition, element) 
+			);
+	}
+	
+	public Option addGuyInCompet(Competition competition, Personne personne) {
+		return new Option ("Inscrire " + personne.getNom() + " " + personne.getPrenom() + " dans la compétition : " + competition.getNom(), "a",
+				() -> {competition.add(personne); System.out.println(personne.getNom() + " " + personne.getPrenom() + " a était inscrit dans la compétition : " + competition.getNom());}
+				);
+	}
+	
+	public Option editNameCompetOption(Competition competition) {
+		return new Option("Renommer une compétition", "r", 
+				() -> {String newName = InOut.getString("Entrer le nouveau nom de la compétition : "); competition.setNom(newName); System.out.println("La compétition à bien était renommé");}
+				);
+	}
+	
+	private Menu menuRemove(Competition competition) {
+		Menu menuRemove = new Menu("Menu Suppression", "s");
+		menuRemove.add(removeCompetOption(competition));
+		menuRemove.add(removeGuyOrTeamOfCompetOption(competition));
+		menuRemove.addBack("b");
+		return menuRemove;
+	}
+	
+	public Option removeCompetOption(Competition competition) {
+		return new Option("Supprimer la compétition : " + competition.getNom(), "r",
+				() -> {
+					if(competition.getCandidats().isEmpty()){
+						competition.delete();
+						System.out.println("La competition a bien était supprimée");
 					}
-				
-				}while(!nameTeam.equals("stop"));
-				
-				
-			}
-		};
-	}
-	
-	public Option addGuyInCompetOption() {
-		return new Option("Ajouter une personne dans une compétition", "4", addGuyInCompetAction());
-	}
-	
-	private Action addGuyInCompetAction() {
-		return new Action () {
-			public void optionSelected() {
-				String nameCompet = InOut.getString("Entrer le nom de la compétition : ");
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Competition> listCompet = inscriptions.getCompetitions();
-				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
-				String nameGuy = null;
-				
-				do {
-				
-					for(Competition co : listCompet) {
-						if(co.getNom().equals(nameCompet)) {
-							nameGuy = InOut.getString("Entrer le nom d'un sportif : ");
-							for(Candidat c : listTeams) {
-								if(c.getNom().equals(nameGuy)) {
-									for(Personne p : listGuys) {
-										if(p.getNom().equals(nameGuy)) {
-											co.add(p);
-											autoSave();
-											System.out.println(nameGuy + "est inscrite dans la compétition " + nameCompet);
-										}
-									}
-								}
-							}
-						}
+					else {
+						System.out.println("La compétition n'est pas vide ! Veuillez supprimer les candidats incrits dans la compétition !");
 					}
-				
-				}while(!nameGuy.equals("stop"));
-			}
-		};
+				}
+				);
 	}
+
+	public Option removeGuyOrTeamOfCompetOption(Competition competition) {
+		return new List<Candidat>("Selectionner l'équipe ou le sportif a supprimer de la compétition : " + competition.getNom(), "d",
+				() -> new ArrayList<>(competition.getCandidats()),
+				(element) -> removeGuyOrTeamOfCompetAction(competition, element)
+				);
+	}
+
+	private Option removeGuyOrTeamOfCompetAction(Competition competition, Candidat candidat) {
+		return new Option("Supprimer " + candidat.getNom() + " de " + competition.getNom(), "s",
+				() -> {competition.remove(candidat); System.out.println(candidat.getNom() + " a bien était supprimé(e) de la compétition : " + competition.getNom());}
+				);
+	}
+	
+	public Option detailCompet(Competition competition) {
+		return new Option("Information détaillées sur la compétition : " + competition.getNom(), "t",
+				() -> {
+					if(competition.estEnEquipe()) {
+						System.out.println("\nCompétition : " + competition.getNom() + "\n Date de clôture : " + competition.getDateCloture() + "\n Type : Equipe \n ");
+					}
+					else {
+						System.out.println("\nCompétition : " + competition.getNom() + "\n Date de clôture : " + competition.getDateCloture() + "\n Type : Individuel \n ");
+					}
+				}
+				);
+	}
+	
+	public Option editDateEnd(Competition competition) {
+		return new Option("Repousser la date de clôture", "d",
+				() -> {
+					LocalDate localDate = null;
+					
+					do {
+						try {
+							String dateCloture = InOut.getString("Entrer la nouvelle date de clôture (dd-mm-yyyy) : ");
+							localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+							competition.setDateCloture(localDate);
+						} catch(DateTimeParseException e) {
+							System.out.println("Veuillez respecter le format de la date 'dd-mm-yyyy' ! " + e);
+						}
+					}while(localDate == null);
+					System.out.println("La date a bien était repoussée");
+				}
+				);
+	}
+	//TEST
+	
 	
 	private Menu menuEquipe() {
 		Menu menuEquipe = new Menu("Equipe", "1");
@@ -431,6 +501,7 @@ public class DialogueUtilisateur {
 				Personne pers = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
 				System.out.println(pers.getNom() + " " + pers.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + pers.getMail());
 				autoSave();
+				Passerelle.save(pers);
 			}
 		};
 	}
@@ -599,6 +670,23 @@ public class DialogueUtilisateur {
 		};
 	}
 	
+	public Option autoSaveOption() {
+		return new Option("Sauvegarder", "x", autoSaveAction());
+	}
+	private Action autoSaveAction() {
+		return new Action() {
+			public void optionSelected() {
+				try
+				{
+					inscriptions.sauvegarder();
+				} 
+				catch (IOException e)
+				{
+					System.out.println("Sauvegarde impossible." + e);
+				}
+			}
+		};
+	}
 //	public Option addAGuyInTeamOption() {
 //		return new Option("Ajouter un sportif dans une équipe", "5", addAGuyInTeamAction());
 //	}

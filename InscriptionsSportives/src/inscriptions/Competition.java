@@ -115,6 +115,7 @@ public class Competition implements Comparable<Competition>, Serializable
 		return Collections.unmodifiableSet(candidats);
 	}
 	
+
 	/**
 	 * Inscrit un candidat de type Personne à la compétition. Provoque une
 	 * exception si la compétition est réservée aux équipes ou que les 
