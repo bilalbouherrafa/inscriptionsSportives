@@ -291,6 +291,7 @@ public class DialogueUtilisateur {
 				Equipe team = inscriptions.createEquipe (nomEquipe);
 				System.out.println("L'équipe, " + nomEquipe + " a était créée avec succés");
 				autoSave();
+				Passerelle.save(team);
 			}
 		};
 	}
