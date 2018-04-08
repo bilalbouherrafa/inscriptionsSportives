@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.SortedSet;
@@ -87,16 +88,17 @@ public class Inscriptions implements Serializable
 	 * Cr��e une comp�tition. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Competition}.
 	 * @param nom
-	 * @param dateCloture
+	 * @param localDate
 	 * @param enEquipe
 	 * @return
 	 */
 	
 	public Competition createCompetition(String nom, 
-			LocalDate dateCloture, boolean enEquipe)
+			Date localDate, boolean enEquipe)
 	{
-		Competition competition = new Competition(this, nom, dateCloture, enEquipe);
+		Competition competition = new Competition(this, nom, localDate, enEquipe);
 		competitions.add(competition);
+		Passerelle.save(competition);
 		return competition;
 	}
 
@@ -165,7 +167,7 @@ public class Inscriptions implements Serializable
 	 * et candidats d�j� existants.
 	 */
 	
-	public Inscriptions reinitialiser()
+	public static Inscriptions reinitialiser()
 	{
 		inscriptions = new Inscriptions();
 		return getInscriptions();
@@ -248,7 +250,7 @@ public class Inscriptions implements Serializable
 	{
 		Passerelle p = new Passerelle();
 		p.open();
-		Inscriptions inscriptions = Inscriptions.getInscriptions();
+		Inscriptions inscriptions = Inscriptions.reinitialiser();
 		DialogueUtilisateur dialogue = new DialogueUtilisateur(inscriptions);
 		dialogue.start();
 		p.close();

@@ -24,8 +24,8 @@
 		  java:comp/UserTransaction</property>
 		  <mapping class="inscriptions.Equipe" />
           <mapping class="inscriptions.Personne" /> 
-<!--         <mapping class="hibernate.relations.Produit" /> -->
-<!--         <mapping class="hibernate.relations.DetailCommande" /> -->
+          <mapping class="inscriptions.Competition" />
+          <mapping class="inscriptions.Candidat" />
 
          
     </session-factory>

@@ -26,15 +26,16 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Equipe extends Candidat
 {	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
 	
 	private static final long serialVersionUID = 4147819927233466035L;
 	
 	@ManyToOne
 	@Cascade(value = { CascadeType.SAVE_UPDATE})
 	private Personne personne;
+	
+	@ManyToOne
+	@Cascade(value = { CascadeType.SAVE_UPDATE})
+	private Equipe equipe;
 	
 	@OneToMany(mappedBy = "equipe")
 	@Cascade(value = { CascadeType.ALL })

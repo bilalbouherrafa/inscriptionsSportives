@@ -23,9 +23,7 @@ import org.hibernate.annotations.SortNatural;
 @Entity
 public class Personne extends Candidat
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+
 	
 	@OneToMany(mappedBy = "personne")
 	@Cascade(value = { CascadeType.ALL })

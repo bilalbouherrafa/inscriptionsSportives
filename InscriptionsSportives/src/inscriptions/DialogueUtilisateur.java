@@ -2,10 +2,13 @@ package inscriptions;
 
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.SortedSet;
 
 import Persistance.Passerelle;
@@ -31,7 +34,7 @@ public class DialogueUtilisateur {
 	private Personne pers;
 	private Competition compet;
 	private Equipe team;
-	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 
 	public DialogueUtilisateur(Inscriptions inscriptions) {
@@ -95,36 +98,24 @@ public class DialogueUtilisateur {
 	}
 	
 	private Action createCompetAction() {
-		return new Action() {
-			public void optionSelected() {
-				
-				LocalDate localDate = null;
-				
-				String nomCompet = InOut.getString("Entrer le nom de la compétition : ");
-				
-				do {
-					try {
-						String dateCloture = InOut.getString("Entrer la date de clôture (dd-mm-yyyy) : ");
-						localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
-					} catch(DateTimeParseException e) {
-						System.out.println("Veuillez respecter le format de la date 'dd-mm-yyyy' ! " + e);
-					}
-				}while(localDate == null);
-				
-				String teamOrNotTeam = null;
-				boolean enEquipe = false;
-				
-				do {
-					teamOrNotTeam = InOut.getString("Entrer 'equipe' pour une compétition en équipe ou solo pour compétition individuel ? (equipe/solo) ");
-				}while((teamOrNotTeam.equals("equipe")) && (teamOrNotTeam.equals("solo")));	
-				
-				enEquipe = teamOrNotTeam.equals("equipe");
-				
-				inscriptions.createCompetition(nomCompet, localDate, enEquipe);
-				System.out.println("La compétition, " + nomCompet + " a était créée avec succés");
-			}
-		};
-	}
+        return new Action() {
+            public void optionSelected() {
+
+            	
+                String nomCompet = InOut.getString("Entrer le nom de la compétition : ");
+                String teamOrNotTeam = InOut.getString("Entrer 'equipe' pour une compétition en équipe ou solo pour compétition individuel ? (equipe/solo) ");
+                Boolean enEquipe = teamOrNotTeam.equals("equipe");
+                try {
+                    String dateCloture = InOut.getString("Entrer la date de clôture (yyyy-mm-dd) : ");
+                    Date localDate = formatter.parse(dateCloture);
+                    inscriptions.createCompetition(nomCompet, localDate, enEquipe);
+                    System.out.println("La compétition, " + nomCompet + " a était créée avec succés");
+                } catch(ParseException e) {
+                     System.out.println("Veuillez respecter le format de la date 'yyyy-mm-dd' ! " + e);
+                }
+            }
+        };
+    }
 	
 	public Option listCompetOption() {
 		return new Option("Lister les compétitions", "a",
@@ -250,18 +241,16 @@ public class DialogueUtilisateur {
 	
 	public Option editDateEnd(Competition competition) {
 		return new Option("Repousser la date de clôture", "d",
-				() -> {
-					LocalDate localDate = null;
+				() -> {		
 					
-					do {
 						try {
 							String dateCloture = InOut.getString("Entrer la nouvelle date de clôture (dd-mm-yyyy) : ");
-							localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+							Date localDate = formatter.parse(dateCloture);
 							competition.setDateCloture(localDate);
-						} catch(DateTimeParseException e) {
+						} catch(ParseException e) {
 							System.out.println("Veuillez respecter le format de la date 'dd-mm-yyyy' ! " + e);
 						}
-					}while(localDate == null);
+					
 					System.out.println("La date a bien était repoussée");
 				}
 				);
@@ -270,7 +259,7 @@ public class DialogueUtilisateur {
 	
 	
 	private Menu menuEquipe() {
-		Menu menuEquipe = new Menu("Equipe", "1");
+		Menu menuEquipe = new Menu("Equipe", "e");
 		menuEquipe.add(createTeamOption());
 		menuEquipe.add(listTeamOption());
 		menuEquipe.add(selectTeam());
@@ -474,7 +463,7 @@ public class DialogueUtilisateur {
 	}
 	
 	private Menu menuPersonne() {
-		Menu menuPersonne = new Menu("Personne", "2");
+		Menu menuPersonne = new Menu("Personne", "p");
 		menuPersonne.add(addAGuyOption());
 		menuPersonne.add(listGuysOption());
 		menuPersonne.add(removeGuyOption());
@@ -544,6 +533,7 @@ public class DialogueUtilisateur {
 						System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
 						autoSave();
 						deleteSuccess = true;
+						Passerelle.delete(p);
 						break;
 					}
 				}
