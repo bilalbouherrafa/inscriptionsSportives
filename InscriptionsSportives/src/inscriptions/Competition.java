@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -20,6 +21,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.SortNatural;
+
+import Persistance.Passerelle;
 
 /**
  * Représente une compétition, c'est-à-dire un ensemble de candidats 
@@ -39,14 +42,10 @@ public class Competition implements Comparable<Competition>, Serializable
 	private Inscriptions inscriptions;
 	private String nom;
 	
-	@OneToMany(mappedBy = "competition")
+	@ManyToMany
 	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Candidat> candidats;
-	
-	@ManyToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE})
-	private Candidat candidat;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCloture;
@@ -164,6 +163,7 @@ public class Competition implements Comparable<Competition>, Serializable
 		else if(!inscrip)
 			throw new RuntimeException();
 		personne.add(this);
+		Passerelle.save(personne);
 		return candidats.add(personne);
 	}
 

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,14 +26,10 @@ public class Personne extends Candidat
 {
 
 	
-	@OneToMany(mappedBy = "personne")
+	@OneToMany(targetEntity=Personne.class, mappedBy = "equipes", fetch=FetchType.EAGER)
 	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Equipe> equipes;
-	
-	@ManyToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE})
-	private Equipe equipe;
 	
 	private static final long serialVersionUID = 4434646724271327254L;
 	private String prenom, mail;
