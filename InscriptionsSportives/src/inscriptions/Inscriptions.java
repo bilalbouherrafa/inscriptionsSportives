@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import EntreeSortie.DialogueUtilisateur;
 import Persistance.Passerelle;
 import commandLineMenus.*;
 import commandLineMenus.rendering.examples.util.InOut;

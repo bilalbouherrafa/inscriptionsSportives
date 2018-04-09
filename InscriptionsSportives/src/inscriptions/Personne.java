@@ -42,6 +42,9 @@ public class Personne extends Candidat
 		this.mail = mail;
 		equipes = new TreeSet<>();
 	}
+	private Personne(){
+		super();
+	}
 
 	/**
 	 * Retourne le prénom de la personne.

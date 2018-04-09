@@ -1,4 +1,4 @@
-package inscriptions;
+package EntreeSortie;
 
 
 import java.io.IOException;
@@ -19,6 +19,11 @@ import java.time.format.DateTimeParseException;
 
 import commandLineMenus.Option;
 import commandLineMenus.rendering.examples.util.InOut;
+import inscriptions.Candidat;
+import inscriptions.Competition;
+import inscriptions.Equipe;
+import inscriptions.Inscriptions;
+import inscriptions.Personne;
 import commandLineMenus.Action;
 import commandLineMenus.List;
 import commandLineMenus.ListAction;

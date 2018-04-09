@@ -1,4 +1,4 @@
-package inscriptions;
+package EntreeSortie;
 
 import commandLineMenus.ListItemRenderer;
 

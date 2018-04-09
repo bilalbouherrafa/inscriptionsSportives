@@ -19,7 +19,7 @@
     <!-- Comportement pour la conservation des tables -->
     <property name="hbm2ddl.auto">create</property>
 
-	      <property name="hibernate.show_sql">false</property> 
+	      <property name="hibernate.show_sql">true</property> 
 	      <property name="jta.UserTransaction">
 		  java:comp/UserTransaction</property>
 		  <mapping class="inscriptions.Equipe" />
