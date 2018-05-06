@@ -16,6 +16,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.SortNatural;
 
+import Persistance.Passerelle;
+
 
 /**
  * Représente une personne physique pouvant s'inscrire à une compétition.
@@ -112,6 +114,7 @@ public class Personne extends Candidat
 		super.delete();
 		for (Equipe e : equipes)
 			e.remove(this);
+		
 	}
 	
 	@Override

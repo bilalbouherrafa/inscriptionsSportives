@@ -116,6 +116,7 @@ public class Inscriptions implements Serializable
 	{
 		Personne personne = new Personne(this, nom, prenom, mail);
 		candidats.add(personne);
+		Passerelle.save(personne);
 		return personne;
 	}
 	
@@ -132,6 +133,7 @@ public class Inscriptions implements Serializable
 	{
 		Equipe equipe = new Equipe(this, nom);
 		candidats.add(equipe);
+		Passerelle.save(equipe);
 		return equipe;
 	}
 	
@@ -153,13 +155,9 @@ public class Inscriptions implements Serializable
 	
 	public static Inscriptions getInscriptions()
 	{
-		
 		if (inscriptions == null)
-		{
-			inscriptions = readObject();
-			if (inscriptions == null)
-				inscriptions = new Inscriptions();
-		}
+			inscriptions = new Inscriptions();
+		
 		return inscriptions;
 	}
 

@@ -89,4 +89,8 @@ public class Equipe extends Candidat
 	{
 		return "Equipe " + super.toString();
 	}
+	
+	public String getNom() {
+		return super.getNom();
+	}
 }
