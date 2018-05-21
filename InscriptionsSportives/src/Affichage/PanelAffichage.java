@@ -16,6 +16,10 @@ class PanelAffichage extends JPanel {
 		
 	}
 	
+	public void menucompetitionbis() {
+		
+	}
+	
 	public int getNumPage() {
 		return numPage;
 	}

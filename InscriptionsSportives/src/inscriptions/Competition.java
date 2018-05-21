@@ -184,6 +184,7 @@ public class Competition implements Comparable<Competition>, Serializable
 		else if (!inscrip)
 			throw new RuntimeException();
 		equipe.add(this);
+		Passerelle.save(equipe);
 		return candidats.add(equipe);
 	}
 
@@ -205,9 +206,14 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	public void delete()
 	{
+//		for (Candidat candidat : candidats)
+//			remove(candidat);
+//		inscriptions.remove(this);
+		
 		for (Candidat candidat : candidats)
-			remove(candidat);
-		inscriptions.remove(this);
+            candidat.remove(this);
+	    candidats.clear();
+	    Passerelle.delete(this);
 	}
 	
 	@Override

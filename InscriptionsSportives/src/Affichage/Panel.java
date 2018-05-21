@@ -181,6 +181,15 @@ public class Panel extends JPanel implements ActionListener {
 		this.revalidate();
 	}
 	
+	public void affichemenubiss() {
+		this.remove(page);
+		retour.setVisible(true);
+		page = new PanelCompetition();
+		page.menucompetitionbis();
+		this.add(page, BorderLayout.CENTER);
+		this.revalidate();
+	}
+	
 	public void afficheRetour() {
 		switch (page.getNumPage())
 		{
@@ -197,6 +206,9 @@ public class Panel extends JPanel implements ActionListener {
 		break;
 		
 		case 5: this.affichemenubis();
+		break;
+		
+		case 6: this.affichemenubiss();
 		break;
 		}
 	}

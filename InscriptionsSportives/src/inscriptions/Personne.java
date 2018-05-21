@@ -110,11 +110,12 @@ public class Personne extends Candidat
 	
 	@Override
 	public void delete()
-	{
-		super.delete();
+	{	
+		
+		
 		for (Equipe e : equipes)
 			e.remove(this);
-		
+		super.delete();
 	}
 	
 	@Override

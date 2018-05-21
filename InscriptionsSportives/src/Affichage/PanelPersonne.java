@@ -1,15 +1,23 @@
 package Affichage;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 
 import Persistance.Passerelle;
 import inscriptions.Equipe;
@@ -20,6 +28,7 @@ public class PanelPersonne extends PanelAffichage implements ActionListener{
 	private JButton creer;
 	private JButton lister;
 	private JButton selectionner;
+	private JButton contacter;
 	private JButton supprimer;
 	private JButton editer;
 	private JButton editerr;
@@ -38,7 +47,14 @@ public class PanelPersonne extends PanelAffichage implements ActionListener{
 	private JButton suppr;
 	private JTextField mailsupp;
 	private JButton validerr;
+	private JList fullList = new JList();
+	private JTextField mailField = new JTextField();
+    private JTextField objectField = new JTextField();
+    private JTextPane messageField = new JTextPane();
+    private DefaultListModel listMails = new DefaultListModel();;
+    private JButton send;
 	private int x;
+	
 
 	
 	
@@ -56,6 +72,8 @@ public class PanelPersonne extends PanelAffichage implements ActionListener{
 	    supprimer.addActionListener(this);
 	    editer = new JButton("Editer un Sportif");
 	    editer.addActionListener(this);
+	    contacter = new JButton("Contacter des Sportifs");
+	    contacter.addActionListener(this);
 
 	    
 	    gbc.gridx = 0;
@@ -63,26 +81,36 @@ public class PanelPersonne extends PanelAffichage implements ActionListener{
 	    gbc.gridheight = 2;
 	    gbc.gridwidth = 2;
 	    this.add(titre, gbc);
+	    
 	    gbc.gridx = 0;
 	    gbc.gridy = 2;
 	    gbc.gridheight = 2;
 	    gbc.gridwidth = 2;
 		this.add(creer, gbc);	
+		
 		gbc.gridx = 0;
 	    gbc.gridy = 4;
 	    gbc.gridheight = 2;
 	    gbc.gridwidth = 2;
 		this.add(lister, gbc);
+		
 		gbc.gridx = 0;
 	    gbc.gridy = 6;
 	    gbc.gridheight = 2;
 	    gbc.gridwidth = 2;
 		this.add(supprimer, gbc);
+		
 		gbc.gridx = 0;
 	    gbc.gridy = 8;
 	    gbc.gridheight = 2;
 	    gbc.gridwidth = 2;
 		this.add(editer, gbc);
+		
+	    gbc.gridx = 0;
+	    gbc.gridy = 10;
+	    gbc.gridheight = 2;
+	    gbc.gridwidth = 2;
+	    this.add(contacter, gbc);
 	}
 
 	public void creerSportif() {
@@ -260,6 +288,85 @@ public class PanelPersonne extends PanelAffichage implements ActionListener{
 		this.add(test);
 		this.revalidate();
 	}
+	
+
+	public void contacterSportif() {
+		this.removeAll();
+        send = new JButton("Envoyer");
+        JButton retour = new JButton("Retour");
+        JPanel contact = new JPanel();
+        JPanel button = new JPanel();
+        JPanel border = new JPanel();
+
+        border.setBorder(BorderFactory.createTitledBorder("Contact"));
+        ArrayList<Personne> guys = new ArrayList<Personne>();
+        guys = (ArrayList) Passerelle.getData("Personne");
+
+        for(Personne p : guys) {
+        	listMails.clear();
+            listMails.addElement(p.getMail());
+        }
+        fullList = new JList(listMails);
+        fullList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        fullList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        fullList.setVisibleRowCount(-1);
+
+    	JLabel destinataire = new JLabel("A : ");
+        JLabel object = new JLabel("Objet : ");
+        JLabel message = new JLabel("Message : ");
+        JScrollPane jsp = new JScrollPane(messageField);
+        JScrollPane listScroller = new JScrollPane(fullList);
+        destinataire.setPreferredSize(new Dimension(70, 24));
+        listScroller.setPreferredSize(new Dimension(700, 80));
+        object.setPreferredSize(new Dimension(70, 24));
+        objectField.setPreferredSize(new Dimension(200, 24));
+        message.setPreferredSize(new Dimension(70, 24));
+        messageField.setPreferredSize(new Dimension(700, 300));
+
+        messageField.setCaretPosition(0);
+        border.setPreferredSize( new Dimension( 800, 500 ) );
+
+        border.add(destinataire);
+        border.add(listScroller);
+        border.add(object);
+        border.add(objectField);
+        border.add(message);
+        border.add(jsp);
+        border.add(retour);
+        border.add(send);
+        retour.addActionListener(this);
+        send.addActionListener(this);
+        contact.add(border);
+        this.add(contact);
+        this.revalidate();
+
+        
+    }
+	
+	public void envoyerMail() {
+        Object[] mails =  fullList.getSelectedValuesList().toArray();
+        if(mails.length == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez séléctionner un sportif, avant de tenter d'envoyer un mail ! Si vous souhaitez envoyer un mail groupé, faite ctrl + clic gauche sur chaque mail !",
+                    "Attention !",
+                    JOptionPane.ERROR_MESSAGE);
+            this.removeAll();
+            this.contacterSportif();
+            this.revalidate();
+        }
+        else {
+            for(int i = 0, n = mails.length; i < n; i++) {
+                String mail = (String) mails[i];
+                Contact.sendMail(mail, objectField.getText(), messageField.getText(),this);
+            }
+
+            this.removeAll();
+            PanelPersonne a = new PanelPersonne();
+            this.add(a);
+            this.revalidate();
+        }
+
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == creer) {
@@ -323,6 +430,12 @@ public class PanelPersonne extends PanelAffichage implements ActionListener{
 				}
 			}
 			System.out.println("Le sportif a bien été édité.");
+		}
+		if(e.getSource() == contacter) {
+			this.contacterSportif();
+		}
+		if(e.getSource() == send) {
+			this.envoyerMail();
 		}
 	}
 }

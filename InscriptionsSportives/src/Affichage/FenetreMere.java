@@ -10,7 +10,7 @@ import Persistance.Passerelle;
 public class FenetreMere extends JFrame {
   public FenetreMere(){             
     this.setTitle("Ma première fenêtre Java");
-    this.setSize(600, 600);
+    this.setSize(900, 900);
     this.setLocationRelativeTo(null);     
     
     JPanel background = new JPanel();

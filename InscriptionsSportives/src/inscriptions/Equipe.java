@@ -81,7 +81,11 @@ public class Equipe extends Candidat
 	@Override
 	public void delete()
 	{
-		super.delete();
+		for (Personne personne : membres)
+		personne.remove(this);
+		membres.clear();
+		Passerelle.delete(this);
+			    
 	}
 	
 	@Override
